@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg[binary]
+pydantic
+pydantic-settings
+python-dotenv
+pandas
+python-multipart
+scikit-learn
+pypdf
+sentence-transformers
+qdrant-client
+httpx
+langgraph

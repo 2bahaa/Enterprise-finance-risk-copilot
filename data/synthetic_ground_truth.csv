@@ -1,0 +1,13 @@
+transaction_id,anomaly_type,transaction_date,department,category,amount,note
+SYN-0089,weekend_payment,2026-05-30,Finance,Audit Fees,14048.72,Large payment dated on a weekend
+SYN-0164,amount_spike,2026-06-24,Operations,Maintenance,12947.85,Amount 8-10x the usual level for this department and category
+SYN-0165,rare_combination,2026-06-24,Operations,Recruitment,5652.70,Department/category combination never seen in normal data
+SYN-0202,amount_spike,2026-07-10,Finance,Software,11409.96,Amount 8-10x the usual level for this department and category
+SYN-0228,weekend_payment,2026-07-19,Legal,Legal Fees,20617.94,Large payment dated on a weekend
+SYN-0287,amount_spike,2026-08-07,Marketing,Advertising,29777.36,Amount 8-10x the usual level for this department and category
+SYN-0298,rare_combination,2026-08-12,HR,Cloud Services,3325.04,Department/category combination never seen in normal data
+SYN-0424,weekend_payment,2026-09-19,IT,Cloud Services,7476.53,Large payment dated on a weekend
+SYN-0451,rare_combination,2026-09-28,Legal,Advertising,4414.43,Department/category combination never seen in normal data
+SYN-0458,amount_spike,2026-09-30,IT,Hardware,17496.51,Amount 8-10x the usual level for this department and category
+SYN-0505,weekend_payment,2026-10-18,Operations,Logistics,12836.77,Large payment dated on a weekend
+SYN-0508,amount_spike,2026-10-19,HR,Recruitment,19209.41,Amount 8-10x the usual level for this department and category

@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finance & Risk Copilot</title>
+<style>
+:root{--paper:#eef2ea;--sheet:#f7f9f4;--ink:#14211b;--soft:#4d5d54;--rule:#b9c8b1;--calc:#1f6b4a;--model:#1d4e89;--quote:#6b4a1e;--flag:#b42318;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--paper:#0f1713;--sheet:#15201a;--ink:#e6efe6;--soft:#9db0a3;--rule:#2b3b31;--calc:#6fcf9f;--model:#8db8ee;--quote:#e0b56e;--flag:#ff8a7a;color-scheme:dark}}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 ui-sans-serif,system-ui,"Segoe UI",sans-serif;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+h1,h2,h3,.serif{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;font-weight:600}
+.wrap{max-width:1040px;margin:0 auto;padding:20px 20px 64px}
+header{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:end;justify-content:space-between;border-bottom:3px double var(--rule);padding-bottom:14px}
+h1{font-size:1.9rem;line-height:1.1;margin:0}
+.conn{display:flex;gap:10px;flex-wrap:wrap}
+label{font-size:.8rem;color:var(--soft);display:block}
+input,textarea,button{font:inherit;color:inherit}
+input,textarea{background:var(--sheet);border:1px solid var(--rule);border-radius:3px;padding:8px 10px;width:100%}
+.conn input{width:170px}.conn input.ds{width:90px}
+input:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--model);outline-offset:2px}
+nav{display:flex;gap:4px;margin:18px 0 22px;border-bottom:1px solid var(--rule)}
+nav button{background:none;border:0;border-bottom:3px solid transparent;padding:8px 14px;cursor:pointer;color:var(--soft);font-weight:600}
+nav button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--calc)}
+.btn{background:var(--ink);color:var(--paper);border:0;border-radius:3px;padding:9px 18px;font-weight:600;cursor:pointer}
+.btn:disabled{opacity:.5;cursor:wait}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
+.chip{background:none;border:1px dashed var(--rule);border-radius:99px;padding:4px 12px;font-size:.85rem;color:var(--soft);cursor:pointer}
+.chip:hover{border-color:var(--calc);color:var(--ink)}
+.row{display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.row label{display:flex;gap:8px;align-items:center}.row input[type=number]{width:70px}
+.sheet{display:grid;grid-template-columns:150px 1fr;gap:0 22px;border-top:1px solid var(--rule);padding:18px 0}
+.mark{font-size:.82rem;color:var(--soft);border-right:2px solid var(--rule);padding-right:14px}
+.mark b{display:block;font-size:1.3rem;line-height:1}
+.mark.calc b{color:var(--calc)}.mark.model b{color:var(--model)}.mark.quote b{color:var(--quote)}.mark.gap b{color:var(--flag)}
+.sheet h3{margin:0 0 6px;font-size:1.15rem}
+.sheet p{margin:4px 0;color:var(--soft)}
+.sheet ul{margin:6px 0;padding-left:18px}.sheet li{margin:3px 0}
+.sheet.quote li{font-family:Georgia,serif;font-style:italic}
+.num{font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{text-align:left;color:var(--soft);font-weight:600;border-bottom:1px solid var(--rule);padding:4px 8px 4px 0}
+td{padding:5px 8px 5px 0;border-bottom:1px dotted var(--rule);vertical-align:top}
+td.r,th.r{text-align:right}.tbl{overflow-x:auto}
+.flag{color:var(--flag);font-weight:600}
+.err{border-left:4px solid var(--flag);padding:8px 12px;background:var(--sheet);margin:12px 0}
+.empty{color:var(--soft);padding:24px 0}
+.sum{font-size:1.25rem;margin:0 0 14px}
+.sum b{font-variant-numeric:tabular-nums}
+.bars{display:grid;gap:6px}
+.bar{display:grid;grid-template-columns:96px 1fr 110px;gap:10px;align-items:center;font-size:.88rem}
+.bar i{display:block;height:14px;background:var(--calc);border-radius:2px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+
+/* Readable copilot answers */
+.answer-head{margin:24px 0 12px;padding-bottom:14px;border-bottom:1px solid var(--rule)}
+.answer-head h2{font-family:Georgia,serif;font-size:1.55rem;line-height:1.25;margin:0 0 8px}
+.route-tags{display:flex;gap:7px;flex-wrap:wrap}
+.route-tag{display:inline-block;background:var(--sheet);border:1px solid var(--rule);border-radius:99px;padding:3px 10px;color:var(--soft);font-size:.78rem}
+.sheet{grid-template-columns:132px minmax(0,1fr);gap:0 20px;padding:20px 0}
+.sheet h3{font-size:1.2rem;margin:0 0 10px}
+.sheet p{line-height:1.7;margin:8px 0;color:var(--ink);overflow-wrap:anywhere}
+.sheet ul{padding-left:22px;margin:8px 0}
+.sheet li{padding:3px 0;line-height:1.6;overflow-wrap:anywhere}
+.sheet.gap .content-panel{background:color-mix(in srgb,var(--flag) 6%,var(--sheet));border:1px solid color-mix(in srgb,var(--flag) 25%,var(--rule));border-radius:6px;padding:14px 16px}
+.sheet.quote .source-card{background:var(--sheet);border:1px solid var(--rule);border-radius:6px;padding:13px 15px;margin:10px 0}
+.source-label{font-size:.78rem;font-weight:700;letter-spacing:.03em;color:var(--quote);margin-bottom:6px}
+.source-card p{margin:0;color:var(--soft);font-size:.94rem}
+.answer-list{display:grid;gap:8px}
+.answer-list .answer-item{padding:10px 13px;border-left:3px solid var(--rule);background:var(--sheet);border-radius:0 5px 5px 0}
+.answer-item p{margin:0}
+@media(max-width:720px){.sheet{grid-template-columns:1fr}.mark{border:0;border-bottom:2px solid var(--rule);padding:0 0 7px;margin:0 0 10px}.sheet.gap .content-panel{padding:12px}}
+
+.hide{display:none}
+.drop{border:1px dashed var(--rule);padding:16px;margin:10px 0 4px;background:var(--sheet)}
+@media (max-width:720px){.sheet{grid-template-columns:1fr}.mark{border:0;border-bottom:2px solid var(--rule);padding:0 0 6px;margin-bottom:8px}.cols{grid-template-columns:1fr}.bar{grid-template-columns:80px 1fr 90px}}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:in .25s ease-out}@keyframes in{from{opacity:.4}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div><h1>Finance &amp; Risk Copilot</h1><p style="margin:6px 0 0;color:var(--soft)">Every line says who produced it: code, a model, or the source document.</p></div>
+  <div class="conn">
+    <div><label for="key">API key</label><input id="key" type="password" autocomplete="off" placeholder="X-API-Key"></div>
+    <div><label for="ds">Dataset ID</label><input id="ds" class="ds" type="number" min="1" placeholder="e.g. 2"></div>
+  </div>
+</header>
+<nav role="tablist">
+  <button role="tab" aria-selected="true" data-v="ask">Ask</button>
+  <button role="tab" aria-selected="false" data-v="ledger">Ledger</button>
+  <button role="tab" aria-selected="false" data-v="load">Load data</button>
+</nav>
+
+<main>
+<section id="ask">
+  <label for="q">Your question</label>
+  <textarea id="q" rows="3" placeholder="Why did IT spending increase, which transactions look unusual, and what does the budget policy say?"></textarea>
+  <div class="row">
+    <button class="btn" id="go">Ask the copilot</button>
+    <label>Passages to retrieve <input id="k" type="number" min="1" max="10" value="3"></label>
+  </div>
+  <div class="chips" id="chips"></div>
+  <div id="out" aria-live="polite"></div>
+</section>
+
+<section id="ledger" class="hide">
+  <div class="row" style="margin:0 0 14px"><button class="btn" id="load">Load ledger</button></div>
+  <div id="led"><p class="empty">Enter your key and dataset ID, then load the ledger.</p></div>
+</section>
+
+<section id="load" class="hide">
+  <div class="drop"><h3 style="margin:0 0 6px">Transactions (CSV)</h3><input type="file" id="csv" accept=".csv"><div class="row"><button class="btn" id="upcsv">Upload CSV</button></div></div>
+  <div class="drop"><h3 style="margin:0 0 6px">Policy or statement (PDF)</h3><input type="file" id="pdf" accept=".pdf"><div class="row"><button class="btn" id="uppdf">Upload PDF</button></div></div>
+  <div id="upout" aria-live="polite"></div>
+</section>
+</main>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const money=v=>Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const store={get(k){try{return sessionStorage.getItem(k)||""}catch(e){return ""}},set(k,v){try{sessionStorage.setItem(k,v)}catch(e){}}};
+$("#key").value=store.get("key");$("#ds").value=store.get("ds");
+$("#key").oninput=e=>store.set("key",e.target.value.trim());
+$("#ds").oninput=e=>store.set("ds",e.target.value.trim());
+
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  document.querySelectorAll("main section").forEach(s=>s.classList.toggle("hide",s.id!==b.dataset.v));
+});
+
+async function api(path,opt={}){
+  const key=$("#key").value.trim();
+  if(!key)throw new Error("Enter your API key first.");
+  const r=await fetch(path,{...opt,headers:{...(opt.headers||{}),"X-API-Key":key}});
+  let data=null;try{data=await r.json()}catch(e){}
+  if(!r.ok){
+    const d=data&&data.detail;
+    throw new Error((typeof d==="string"?d:d?JSON.stringify(d):"Request failed")+" (HTTP "+r.status+")");
+  }
+  return data;
+}
+const dsq=()=>{const d=$("#ds").value.trim();return d?"?dataset_id="+encodeURIComponent(d):""};
+const fail=(el,e)=>{el.innerHTML='<div class="err" role="alert">'+esc(e.message)+'</div>'};
+
+/* ---------- Ask ---------- */
+const EX=["Why did IT spending increase, which transactions look unusual, and what does the budget policy say about this variance?","Which department spends the most?","Which transactions look unusual?","What does the policy say about weekend payments?"];
+$("#chips").innerHTML=EX.map((t,i)=>'<button class="chip" data-i="'+i+'">'+esc(t.length>58?t.slice(0,56)+"…":t)+'</button>').join("");
+$("#chips").onclick=e=>{const i=e.target.dataset.i;if(i!==undefined)$("#q").value=EX[i]};
+
+const HEADS=[
+  ["NOT FOUND IN THE DOCUMENTS","Not found in the documents","gap","!","No direct answer in the uploaded documents"],
+  ["CLOSEST PASSAGES","Related document passages","quote","❝","Reference material only — not a confirmed answer"],
+  ["SPENDING OVERVIEW","Spending overview","calc","✓","Calculated from transaction data"],
+  ["WHAT CHANGED","What changed","calc","✓","Calculated from transaction data"],
+  ["UNUSUAL TRANSACTIONS","Transactions to review","model","◆","Flagged for human review — not proof of wrongdoing"],
+  ["DOCUMENT FINDINGS","What the documents say","quote","❝","Findings supported by the uploaded documents"],
+  ["SOURCE EXCERPTS","Source excerpts","quote","❝","Text retrieved from the documents"],
+  ["SOURCES","Sources","quote","❝","Documents used as evidence"],
+  ["EVIDENCE GAPS","Evidence gaps","gap","!","Information the system could not verify"]
+];
+
+function split(text){
+  // The API may return real newlines, escaped newlines, or all sections in one paragraph.
+  const normalized=String(text??"").replace(/\\r\\n/g,"\n").replace(/\\n/g,"\n").replace(/\r\n?/g,"\n").trim();
+  const names=HEADS.map(x=>x[0].replace(/[.*+?^${}()|[\]\\]/g,"\\$&")).join("|");
+  const re=new RegExp("(^|\\s)("+names+")(?:\\s*\\([^)]*\\))?(?=\\s|$)","g");
+  const hits=[];let m;
+  while((m=re.exec(normalized))!==null){
+    const head=HEADS.find(x=>x[0]===m[2]);
+    if(head)hits.push({start:m.index+m[1].length,end:re.lastIndex,h:head});
+  }
+  if(!hits.length)return [];
+  return hits.map((hit,i)=>({
+    h:hit.h,
+    text:normalized.slice(hit.end,i+1<hits.length?hits[i+1].start:normalized.length).trim()
+  }));
+}
+
+function readableSourceText(text){
+  // Add visual breaks before common financial-statement labels when PDF extraction
+  // has flattened the original table/line layout into one sentence.
+  return String(text??"")
+    .replace(/\s+(?=(?:Assets|Liabilities|Stockholders[’']? Equity|Current Assets|Current Liabilities|Cash|Accounts payable|Accounts receivable|Interest payable|Supplies|Wages payable|Total current assets|Income taxes payable|Utilities payable|Equipment|Long-term Notes Payable|Owners[’']? Equity|Retained earnings|Total equity|Total assets|Total liabilities|Sales revenue|Cost of Goods Sold|Gross Profit|Operating Expenses|Depreciation expense|Wages expenses|Supplies expenses|Total operating expenses|Operating Income|Other Item|Interest expense|Pretax income|Income tax expense|Net income|Retained Earnings Balance|Dividends declared)\b)/g,"\n")
+    .trim();
+}
+
+function sourceCards(text){
+  const chunks=String(text??"").split(/(?=\[SOURCE\s+\d+\]|\[SOURCE\s+\d+\])/i).map(x=>x.trim()).filter(Boolean);
+  if(chunks.length<=1)return '<div class="content-panel"><p>'+esc(readableSourceText(text)).replace(/\n/g,"</p><p>")+'</p></div>';
+  return chunks.map((chunk,i)=>{
+    const labelMatch=chunk.match(/^\[SOURCE\s+(\d+)\]\s*/i);
+    const label=labelMatch?"Source "+labelMatch[1]:"Additional passage";
+    let passage=chunk.replace(/^\[SOURCE\s+\d+\]\s*/i,"").trim();
+    const splitAt=passage.indexOf(":");
+    let sourceName="";
+    if(splitAt>0&&splitAt<180){sourceName=passage.slice(0,splitAt).trim();passage=passage.slice(splitAt+1).trim()}
+    const formatted=esc(readableSourceText(passage)).replace(/\n/g,"</p><p>");
+    return '<div class="source-card"><div class="source-label">'+label+(sourceName?' · '+esc(sourceName):"")+'</div><p>'+formatted+'</p></div>';
+  }).join("");
+}
+
+function body(text,sectionKey){
+  const value=String(text??"").trim();
+  if(!value)return '<p class="empty">No details were returned for this section.</p>';
+  if(sectionKey==="CLOSEST PASSAGES"||sectionKey==="SOURCE EXCERPTS"||sectionKey==="SOURCES"){
+    return sourceCards(value);
+  }
+  const lines=value.replace(/\\n/g,"\n").split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  const rows=lines.filter(l=>/^[-•*]\s.*\|.*\|.*\|/.test(l));
+  let out="",items=[];
+  const flush=()=>{if(items.length){out+='<ul>'+items.join("")+'</ul>';items=[]}};
+  if(rows.length>1){
+    out+='<div class="tbl"><table><tr><th>ID</th><th>Date</th><th>Department / category</th><th class="r">Amount</th><th>Why flagged</th></tr>'+
+    rows.map(l=>{const p=l.replace(/^[-•*]\s*/,"").split("|").map(s=>s.trim());
+      return"<tr><td>"+esc(p[0])+"</td><td>"+esc(p[1])+"</td><td>"+esc(p[2])+'</td><td class="r num">'+esc(p[3])+'</td><td class="flag">'+esc(p[5]||p[4]||"")+"</td></tr>"}).join("")+"</table></div>";
+  }
+  for(const line of lines){
+    if(rows.length>1&&rows.includes(line))continue;
+    if(/^[-•*]\s/.test(line))items.push('<li class="num">'+esc(line.replace(/^[-•*]\s*/,""))+"</li>");
+    else{
+      flush();
+      const sentences=line.split(/(?<=[.!?])\s+(?=[A-Z0-9])/);
+      if(sentences.length>1)out+='<div class="answer-list">'+sentences.map(s=>'<div class="answer-item"><p>'+esc(s)+'</p></div>').join("")+'</div>';
+      else out+='<p class="num">'+esc(line)+'</p>';
+    }
+  }
+  flush();
+  return out;
+}
+
+function sheet(cls,tick,note,title,inner){
+  const panel=cls==="gap"?'content-panel':"";
+  return '<div class="sheet '+cls+'"><div class="mark '+cls+'"><b>'+tick+"</b>"+esc(note)+"</div><div><h3>"+esc(title)+"</h3>"+(panel?'<div class="'+panel+'">'+inner+'</div>':inner)+"</div></div>";
+}
+
+function render(r){
+  const routes=Array.isArray(r.routes_used)?r.routes_used:[];
+  let html='<div class="answer-head"><h2>'+esc(r.question||"Copilot response")+'</h2><div class="route-tags">'+
+    (routes.length?'<span class="route-tag">Analysis: '+routes.map(x=>esc(String(x).replace("_node","").replace(/_/g," "))).join(", ")+'</span>':"")+
+    '</div></div>';
+  const parts=split(r.answer);
+  if(parts.length){
+    for(const section of parts){
+      const [key,title,cls,tick,note]=section.h;
+      html+=sheet(cls,tick,note,title,body(section.text,key));
+    }
+  }else{
+    html+=sheet("model","◆","Copilot response","Answer",body(r.answer||"No answer was returned."));
+  }
+  const warnings=Array.isArray(r.warnings)?r.warnings:[];
+  if(warnings.length&&!parts.some(p=>p.h[0]==="EVIDENCE GAPS")){
+    html+=sheet("gap","!","Please review","Important notes",'<ul>'+warnings.map(w=>"<li>"+esc(w)+"</li>").join("")+"</ul>");
+  }
+  return html;
+}
+$("#go").onclick=async()=>{
+  const q=$("#q").value.trim(),out=$("#out"),b=$("#go");
+  if(!q){out.innerHTML='<div class="err">Type a question first.</div>';return}
+  b.disabled=true;out.innerHTML='<p class="empty">Gathering evidence…</p>';
+  try{
+    const d=$("#ds").value.trim();
+    const payload={question:q,top_k:Number($("#k").value)||3};
+    if(d)payload.dataset_id=Number(d);
+    const r=await api("/copilot/ask",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+    out.innerHTML=render(r);
+  }catch(e){fail(out,e)}finally{b.disabled=false}
+};
+
+/* ---------- Ledger ---------- */
+function bars(rows,label,value){
+  const max=Math.max(...rows.map(value),1);
+  return'<div class="bars">'+rows.map(r=>'<div class="bar"><span>'+esc(label(r))+'</span><i style="width:'+(value(r)/max*100).toFixed(1)+'%"></i><span class="num" style="text-align:right">'+money(value(r))+"</span></div>").join("")+"</div>";
+}
+$("#load").onclick=async()=>{
+  const el=$("#led");el.innerHTML='<p class="empty">Loading…</p>';
+  try{
+    const [k,a]=await Promise.all([api("/financial/kpis"+dsq()),api("/financial/anomalies"+dsq())]);
+    const tot=k.total_expenses[0],cur=tot?tot.currency:"";
+    const flagged=a.anomalies.filter(x=>x.is_anomaly);
+    const months=k.monthly_trends.filter(m=>m.currency===cur);
+    const depts=k.department_spending.filter(d=>d.currency===cur);
+    el.innerHTML='<p class="sum serif">'+k.transaction_count+' transactions totalling <b>'+esc(cur)+" "+money(tot?tot.total_amount:0)+"</b>; "+flagged.length+" flagged for review.</p>"+
+      '<div class="cols"><div><h3>Spending by month</h3>'+bars(months,m=>String(m.month).slice(0,7),m=>Number(m.total_amount))+"</div>"+
+      "<div><h3>Spending by department</h3>"+bars(depts,d=>d.department,d=>Number(d.total_amount))+"</div></div>"+
+      '<h3 style="margin-top:26px">Review queue</h3><p style="color:var(--soft);margin:0 0 8px">A flag asks for a human look. It is not evidence of wrongdoing.</p>'+
+      (flagged.length?'<div class="tbl"><table><tr><th>ID</th><th>Date</th><th>Department / category</th><th class="r">Amount</th><th class="r">Score</th><th>Why flagged</th></tr>'+
+      flagged.map(x=>"<tr><td>"+esc(x.transaction_id)+"</td><td>"+esc(x.transaction_date)+"</td><td>"+esc(x.department)+" / "+esc(x.category)+'</td><td class="r num">'+money(x.amount)+'</td><td class="r num">'+Number(x.anomaly_score).toFixed(3)+'</td><td class="flag">'+esc((x.reasons||[]).join("; "))+"</td></tr>").join("")+"</table></div>":'<p class="empty">Nothing flagged.</p>');
+  }catch(e){fail(el,e)}
+};
+
+/* ---------- Upload ---------- */
+async function up(inputId,path,btn){
+  const out=$("#upout"),f=$(inputId).files[0];
+  if(!f){out.innerHTML='<div class="err">Choose a file first.</div>';return}
+  btn.disabled=true;out.innerHTML='<p class="empty">Uploading '+esc(f.name)+"…</p>";
+  try{
+    const fd=new FormData();fd.append("file",f);
+    const r=await api(path,{method:"POST",body:fd});
+    out.innerHTML='<div class="sheet calc"><div class="mark calc"><b>✓</b>Stored</div><div><h3>'+esc(f.name)+"</h3><ul>"+Object.entries(r).map(([k,v])=>'<li class="num">'+esc(k)+": "+esc(v)+"</li>").join("")+"</ul></div></div>";
+    if(r.id&&!$("#ds").value){$("#ds").value=r.id;store.set("ds",String(r.id))}
+  }catch(e){fail(out,e)}finally{btn.disabled=false}
+}
+$("#upcsv").onclick=e=>up("#csv","/financial/datasets",e.target);
+$("#uppdf").onclick=e=>up("#pdf","/documents/upload",e.target);
+</script>
+</body>
+</html>

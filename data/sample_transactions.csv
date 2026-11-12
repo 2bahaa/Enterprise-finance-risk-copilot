@@ -1,0 +1,6 @@
+transaction_id,transaction_date,department,category,amount,currency,description
+TXN-001,2026-11-01,Finance,Software,1500.50,USD,Software subscription
+TXN-002,2026-11-02,HR,Recruitment,2500.00,USD,Recruitment campaign
+TXN-003,2026-11-03,IT,Hardware,750.25,USD,New laptops
+TXN-004,2026-11-04,Marketing,Advertising,3200.00,USD,Digital campaign
+TXN-005,2026-11-05,Finance,Travel,450.75,USD,Business trip
