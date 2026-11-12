@@ -433,7 +433,7 @@ Potential next improvements include:
 
 ## Author
 
-**[Mohamed Bahaa]**
+**Mohamed Bahaa**
 
 AI Engineer | Machine Learning | LLM Applications | RAG | AI Engineering
 
